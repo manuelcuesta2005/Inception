@@ -7,6 +7,7 @@ setup:
 	@echo "[-] Creando directorios físicos con privilegios..."
 	@sudo mkdir -p $(DATA_DIR)/mariadb
 	@sudo mkdir -p $(DATA_DIR)/wordpress
+	@sudo mkdir -p $(DATA_DIR)/portainer
 	@echo "[-] Ajustando permisos de los directorios para el usuario actual..."
 	@sudo chown -R $(USER):$(USER) $(DATA_DIR)
 

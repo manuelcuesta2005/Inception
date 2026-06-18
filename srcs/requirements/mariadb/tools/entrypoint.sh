@@ -1,22 +1,18 @@
 #!/bin/bash
 set -e
 
-# 1. CORREGIDO: Usar chown para cambiar de dueño, no mkdir
 mkdir -p /run/mysqld
 chown -R mysql:mysql /run/mysqld
 chown -R mysql:mysql /var/lib/mysql
 
-# Inicializar los archivos base del sistema si están vacíos
 if [ ! -d "/var/lib/mysql/mysql" ]; then
     echo "[-] Inicializando estructura interna de MariaDB..."
-    # 2. CORREGIDO: Ruta absoluta /dev/null
     mysql_install_db --user=mysql --datadir=/var/lib/mysql > /dev/null
 fi
 
 if [ ! -d "/var/lib/mysql/${MYSQL_DATABASE}" ]; then
     echo "[-] Initialising the system database..."
-    
-    # Arrancar temporalmente de fondo
+
     mysqld --user=mysql --skip-networking &
     pid="$!"
 
@@ -28,7 +24,6 @@ if [ ! -d "/var/lib/mysql/${MYSQL_DATABASE}" ]; then
     echo "[-] Create Database and users..."
     mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
     
-    # 4. CORREGIDO: Cambiado MYSQL_PASSWORD por MYSQL_DATABASE
     mysql -u root -p"${MYSQL_ROOT_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
     mysql -u root -p"${MYSQL_ROOT_PASSWORD}" -e "CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
     mysql -u root -p"${MYSQL_ROOT_PASSWORD}" -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';"
@@ -40,5 +35,4 @@ if [ ! -d "/var/lib/mysql/${MYSQL_DATABASE}" ]; then
     echo "[-] ¡Database successfully configured!"
 fi
 
-# Ejecutar en primer plano de manera limpia
 exec mysqld --user=mysql

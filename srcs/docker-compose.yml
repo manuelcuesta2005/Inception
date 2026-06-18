@@ -41,6 +41,64 @@ services:
       - wordpress_data:/var/www/wordpress
     networks:
       - inception
+    
+  adminer:
+    build: ./requirements/bonus/adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - inception
+    depends_on:
+      - mariadb
+
+  static:
+    build: ./requirements/bonus/static
+    container_name: static
+    restart: always
+    ports:
+      - "8081:8081"
+    networks:
+      - inception
+  
+  portainer:
+    build: ./requirements/bonus/portainer
+    container_name: portainer
+    restart: always
+    ports:
+      - "9443:9443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "portainer_data:/data"
+    networks:
+      - inception
+
+  redis:
+    build: ./requirements/bonus/redis
+    container_name: redis
+    restart: always
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+  
+  ftp:
+    build: ./requirements/bonus/ftp
+    container_name: ftp
+    restart: always
+    environment:
+      - FTP_USER=${FTP_USER}
+      - FTP_PASSWORD=${FTP_PASSWORD}
+    volumes:
+      - wordpress_data:/var/www/wordpress
+    ports:
+      - "21:21"
+      - "40000-40005:40000-40005"
+    networks:
+      - inception
+    depends_on:
+      - wordpress
 
 volumes:
   mariadb_data:
@@ -55,6 +113,12 @@ volumes:
       type: none
       o: bind
       device: /home/mcuesta-/data/wordpress
+  portainer_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/mcuesta-/data/portainer
 
 networks:
   inception:
