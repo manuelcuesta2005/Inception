@@ -1,4 +1,4 @@
-FROM debian:bullseye
+FROM debian:bookworm-slim
 
 RUN apt-get update -y && apt-get upgrade -y && \
     apt-get install -y redis-server php-redis && \

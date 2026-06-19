@@ -20,7 +20,7 @@ if [ ! -f "wp-config.php" ]; then
         --allow-root
 
     echo "[-] Instalando WordPress y configurando Administrador..."
-    wp core install --alow-root \
+    wp core install --allow-root \
         --url="${DOMAIN_NAME}" \
         --title="${WP_TITLE}" \
         --admin_user="${WP_ADMIN_USER}" \
