@@ -7,6 +7,12 @@ until mysqladmin ping -h"mariadb" --silent; do
 done
 echo "[+] ¡MariaDB detectada con éxito!"
 
+mkdir -p /var/www/wordpress
+cd /var/www/wordpress
+
+mkdir -p /run/php
+sed -i 's|listen = /run/php/php8.2-fpm.sock|listen = 9000|g' /etc/php/8.2/fpm/pool.d/www.conf
+
 if [ ! -f "wp-config.php" ]; then
     echo "[-] Descargando WordPress..."
     wp core download --allow-root
@@ -40,5 +46,7 @@ if [ ! -f "wp-config.php" ]; then
     echo "[+] ¡WordPress configurado exitosamente!"
 fi
 
-echo "[-] Iniciando PHP-FPM..."
+cd /var/www/wordpress
+
+echo "[-] Iniciando PHP-FPM 8.2..."
 exec php-fpm8.2 -F
