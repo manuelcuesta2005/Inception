@@ -1,6 +1,6 @@
 FROM debian:bookworm-slim
 
-RUN apt-get update -y && apt-get upgrade -y && \
+RUN apt-get update -y &&  \
     apt-get install -y php7.4-fpm php7.4-mysql curl && \
     rm -rf /var/lib/apt/lists/*
 
