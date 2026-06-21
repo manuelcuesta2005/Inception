@@ -1,6 +1,6 @@
-FROM debian:bookworm-slim
+FROM debian:bookworm
 
-RUN apt-get update -y &&  \
+RUN apt-get update -y && \
     apt-get install -y redis-server php-redis && \
     rm -rf /var/lib/apt/lists/*
 

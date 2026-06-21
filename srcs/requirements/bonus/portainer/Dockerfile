@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim
+FROM debian:bookworm
 
 RUN apt-get update -y &&  \
     apt-get install -y wget tar ca-certificates && \
