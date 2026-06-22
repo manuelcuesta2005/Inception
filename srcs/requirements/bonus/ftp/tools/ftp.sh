@@ -28,5 +28,5 @@ pasv_address=127.0.0.1
 allow_writeable_chroot=YES
 EOF
 
-echo "[+] Servidor FTP levantado para el usuario $FTP_USER..."
+echo "[+] FTP server enabled for the user $FTP_USER..."
 exec vsftpd /etc/vsftpd.conf

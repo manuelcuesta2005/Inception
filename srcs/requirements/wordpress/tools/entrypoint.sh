@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-echo "[-] Esperando a que MariaDB en mariadb:3306 esté lista..."
+echo "[-] Waiting for MariaDB on mariadb:3306 to be ready..."
 until mysqladmin ping -h"mariadb" --silent; do
     sleep 2
 done
-echo "[+] ¡MariaDB detectada con éxito!"
+echo "[+] MariaDB has been successfully detected!"
 
 mkdir -p /var/www/wordpress
 cd /var/www/wordpress
@@ -14,10 +14,10 @@ mkdir -p /run/php
 sed -i 's|listen = /run/php/php8.2-fpm.sock|listen = 9000|g' /etc/php/8.2/fpm/pool.d/www.conf
 
 if [ ! -f "wp-config.php" ]; then
-    echo "[-] Descargando WordPress..."
+    echo "[-] Downloading Wordpress..."
     wp core download --allow-root
 
-    echo "[-] Creando archivo wp-config.php..."
+    echo "[-] Creating the wp-config.php file..."
     wp config create \
         --dbname="${MYSQL_DATABASE}" \
         --dbuser="${MYSQL_USER}" \
@@ -25,7 +25,7 @@ if [ ! -f "wp-config.php" ]; then
         --dbhost="mariadb:3306" \
         --allow-root
 
-    echo "[-] Instalando WordPress y configurando Administrador..."
+    echo "[-] Installing WordPress and setting up the admin panel..."
     wp core install --allow-root \
         --url="${DOMAIN_NAME}" \
         --title="${WP_TITLE}" \
@@ -34,7 +34,7 @@ if [ ! -f "wp-config.php" ]; then
         --admin_email="${WP_ADMIN_EMAIL}" \
         --skip-email
 
-    echo "[-] Creando usuario secundario..."
+    echo "[-] Creating a secondary user..."
     wp user create \
         "${WP_USER}" \
         "${WP_USER_EMAIL}" \
@@ -43,10 +43,10 @@ if [ ! -f "wp-config.php" ]; then
         --allow-root
     
     chown -R www-data:www-data /var/www/wordpress
-    echo "[+] ¡WordPress configurado exitosamente!"
+    echo "[+] WordPress has been successfully set up!"
 fi
 
 cd /var/www/wordpress
 
-echo "[-] Iniciando PHP-FPM 8.2..."
+echo "[-] Init PHP-FPM 8.2..."
 exec php-fpm8.2 -F

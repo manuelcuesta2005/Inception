@@ -6,7 +6,7 @@ chown -R mysql:mysql /run/mysqld
 chown -R mysql:mysql /var/lib/mysql
 
 if [ ! -d "/var/lib/mysql/mysql" ]; then
-    echo "[-] Inicializando estructura interna de MariaDB..."
+    echo "[-] Initialising MariaDB’s internal structure..."
     mysql_install_db --user=mysql --datadir=/var/lib/mysql > /dev/null
 fi
 
