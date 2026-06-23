@@ -5,6 +5,14 @@ mkdir -p /run/mysqld
 chown -R mysql:mysql /run/mysqld
 chown -R mysql:mysql /var/lib/mysql
 
+if [ -f "/run/secrets/mysql_password" ]; then
+    MYSQL_PASSWORD=$(cat /run/secrets/mysql_password)
+fi
+
+if [ -f "/run/secrets/mysql_root_password" ]; then
+    MYSQL_ROOT_PASSWORD=$(cat /run/secrets/mysql_root_password)
+fi
+
 if [ ! -d "/var/lib/mysql/mysql" ]; then
     echo "[-] Initialising MariaDB’s internal structure..."
     mysql_install_db --user=mysql --datadir=/var/lib/mysql > /dev/null

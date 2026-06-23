@@ -15,13 +15,13 @@ sed -i 's|listen = /run/php/php8.2-fpm.sock|listen = 9000|g' /etc/php/8.2/fpm/po
 
 if [ ! -f "wp-config.php" ]; then
     echo "[-] Downloading Wordpress..."
-    wp core download --allow-root
+    wp core download --allow-root --force
 
     echo "[-] Creating the wp-config.php file..."
     wp config create \
         --dbname="${MYSQL_DATABASE}" \
         --dbuser="${MYSQL_USER}" \
-        --dbpass="${MYSQL_PASSWORD}" \
+        --dbpass="$(cat /run/secrets/mysql_password)" \
         --dbhost="mariadb:3306" \
         --allow-root
 
@@ -30,7 +30,7 @@ if [ ! -f "wp-config.php" ]; then
         --url="${DOMAIN_NAME}" \
         --title="${WP_TITLE}" \
         --admin_user="${WP_ADMIN_USER}" \
-        --admin_password="${WP_ADMIN_PASSWORD}" \
+        --admin_password="$(cat /run/secrets/wp_admin_password)" \
         --admin_email="${WP_ADMIN_EMAIL}" \
         --skip-email
 
@@ -38,12 +38,24 @@ if [ ! -f "wp-config.php" ]; then
     wp user create \
         "${WP_USER}" \
         "${WP_USER_EMAIL}" \
-        --user_pass="${WP_USER_PASSWORD}" \
+        --user_pass="$(cat /run/secrets/wp_user_password)" \
         --role=author \
         --allow-root
     
     chown -R www-data:www-data /var/www/wordpress
     echo "[+] WordPress has been successfully set up!"
+fi
+
+REDIS_MARKER="/var/www/wordpress/.redis_configured"
+
+if [ ! -f "$REDIS_MARKER" ]; then
+  echo "[WP] Setting up Redis cache..."
+  wp plugin install redis-cache --activate --path=/var/www/wordpress --allow-root || true
+  wp config set WP_REDIS_HOST redis --type=constant --path=/var/www/wordpress --allow-root
+  wp config set WP_REDIS_PORT 6379 --raw --type=constant --path=/var/www/wordpress --allow-root
+  wp redis enable --path=/var/www/wordpress --allow-root || true
+  touch "$REDIS_MARKER"
+  chown www-data:www-data "$REDIS_MARKER"
 fi
 
 cd /var/www/wordpress
